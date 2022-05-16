@@ -7,13 +7,18 @@ object OOBasics extends App {
   person.greet("Daniel")
   person.greet()
 
-  val author = new Writer("Charles"," Dickens", 1812)
-  val imposter = new Writer("Charles"," Dickens", 1812)
+  val author = new Writer("Charles", " Dickens", 1812)
+  val imposter = new Writer("Charles", " Dickens", 1812)
   val novel = new Novel("Great Expactations", 1861, author)
 
   println(novel.authorAge)
   println(novel.isWrittenBy(author))
   println(novel.isWrittenBy(imposter))
+
+  val counter = new Counter
+  counter.increment.increment.increment.print
+  counter.increment(10).print
+
 }
 
 //constructor
@@ -46,4 +51,28 @@ class Novel(name: String, year: Int, author: Writer) {
   def isWrittenBy(author: Writer) = author == this.author
 
   def copy(newYear: Int): Novel = new Novel(name, newYear, author)
+}
+
+class Counter(val count: Int = 0) {
+  def increment = {
+    println("incrementing")
+    new Counter(count + 1) // immutability
+  }
+
+  def decrement = {
+    println("decrementing")
+    new Counter(count - 1)
+  }
+
+  def increment(n: Int): Counter = {
+    if (n <= 0) this
+    else increment.increment(n - 1)
+  }
+
+  def decrement(n: Int): Counter = {
+    if (n <= 0) this
+    else decrement.decrement(n - 1)
+  }
+
+  def print = println(count)
 }
