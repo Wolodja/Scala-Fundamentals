@@ -16,7 +16,8 @@ abstract class MyList[+A] {
   override def toString: String = s"[${printElements}]"
   def filter(predicate: MyPredicate[A]): MyList[A]
   def map[B](transformer: MyTransformer[A, B]): MyList[B]
-  //def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
+  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
+  def ++[B >: A](list: MyList[B]): MyList[B]
 }
 
 object Empty extends MyList[Nothing] {
@@ -27,7 +28,8 @@ object Empty extends MyList[Nothing] {
   def printElements: String = ""
   def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
   def map[B](transformer: MyTransformer[Nothing, B]): MyList[B] = Empty
-  //def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
+  def ++[B >: Nothing](list: MyList[B]) : MyList[B] = list
+  def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
 }
 
 class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -50,7 +52,23 @@ class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   def map[B](transformer: MyTransformer[A, B]): MyList[B] = {
     new Cons(transformer.transform(h), t.map(transformer))
   }
-  //def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
+  /*
+    [1,2] ++ [3,4,5]
+   = new Cons(1, [2] ++ [3,4,5])
+   = new Cons(1, new Cons(2, Empty ++ [3,4,5]))
+   = new Cons(1, new Cons(2, [3,4,5]))
+  */
+  def ++[B >: A](list: MyList[B]) : MyList[B] = new Cons(h, t ++ list)
+
+  /*
+    [1,2].flatMap(n => [n, n+1])
+    = [1,2] ++ [2]flatMap(n => [n, n+1])
+    = [1,2] ++ [2,3] ++ Empty.flatMap(n => [n, n+1])
+    = [1,2] ++ [2,3] ++ Empty
+    = [1,2,2,3]
+  */
+  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] =
+    transformer.transform(h) ++ t.flatMap(transformer)
 }
 
 trait MyPredicate[-T] {
@@ -72,5 +90,10 @@ object ListTest extends App {
   }).toString)
   println(listOfIntegers.filter(new MyPredicate[Int] {
     override def test(element: Int): Boolean = element % 2 == 0
+  }).toString)
+  val anotherListOfIntegers: MyList[Int] = new Cons(4, new Cons(5, new Cons(6, Empty)))
+  println((listOfIntegers ++ anotherListOfIntegers).toString)
+  println(listOfIntegers.flatMap(new MyTransformer[Int, MyList[Int]]{
+    override def transform(element: Int) = new Cons[Int](element, new Cons(element + 1, Empty))
   }).toString)
 }
