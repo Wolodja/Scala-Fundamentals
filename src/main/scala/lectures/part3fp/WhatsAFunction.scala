@@ -31,11 +31,7 @@ object WhatsAFunction extends App {
     override def apply(v1: String, v2: String): String = v1 + v2
   }
 
-  val supperAdder : Int => (Int => Int) = new Function1[Int, Function1[Int, Int]]{
-    override def apply(x: Int): Int => Int = new Function[Int, Int]{
-      override def apply(y: Int): Int = x + y
-    }
-  }
+  val supperAdder : Int => Int => Int = (x: Int) => (y: Int) => x + y
 
   val adder3 = supperAdder(3)
   println(adder3(4))

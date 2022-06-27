@@ -14,4 +14,13 @@ object AnonymousFunctions extends App {
   // careful
   println(justDoSomething)
   println(justDoSomething())
+
+  // curly braces with lambda
+  val stringToInt = { (str: String) =>
+    str.toInt
+  }
+
+  // MOAR syntactic sugar
+  val niceIncrementer: Int => Int = _ + 1 // x => x + 1
+  val niceAdder : (Int, Int) => Int = _ + _ // (a, b) => a + b
 }
