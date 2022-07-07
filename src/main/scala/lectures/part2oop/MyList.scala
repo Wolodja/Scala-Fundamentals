@@ -21,6 +21,9 @@ abstract class MyList[+A] {
   def flatMap[B](transformer: A => MyList[B]): MyList[B]
 
   def ++[B >: A](list: MyList[B]): MyList[B]
+
+  // hofs
+  def foreach(sideEffect: A => Unit): Unit
 }
 
 case object Empty extends MyList[Nothing] {
@@ -35,6 +38,9 @@ case object Empty extends MyList[Nothing] {
   def flatMap[B](transformer: Nothing => MyList[B]): MyList[B] = Empty
 
   def ++[B >: Nothing](list: MyList[B]) : MyList[B] = list
+
+  // hofs
+  def foreach(sideEffect: Nothing => Unit): Unit = ()
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -75,20 +81,33 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   */
   def flatMap[B](transformer: A => MyList[B]): MyList[B] =
     transformer(h) ++ t.flatMap(transformer)
+
+
+  // hofs
+  def foreach(sideEffect: A => Unit): Unit = {
+    sideEffect(h)
+    t.foreach(sideEffect)
+  }
 }
 
 
 object ListTest extends App {
   val listOfIntegers: MyList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
   val listOfStrings: MyList[String] = new Cons("a", new Cons("b", new Cons("c", Empty)))
+
   println(listOfIntegers.toString)
   println(listOfStrings.toString)
   println(listOfIntegers.add("element").toString)
   println(listOfIntegers.map(_ * 2).toString)
   println(listOfIntegers.filter(_ % 2 == 0).toString)
+
   val anotherListOfIntegers: MyList[Int] = new Cons(4, new Cons(5, new Cons(6, Empty)))
   println((listOfIntegers ++ anotherListOfIntegers).toString)
   println(listOfIntegers.flatMap((element: Int) => new Cons[Int](element, new Cons(element + 1, Empty))).toString)
+
   val cloneListOfIntegers: MyList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
   println(listOfIntegers == cloneListOfIntegers)
+
+  val printElements = (x: Int) => println(x)
+  listOfIntegers.foreach(printElements)
 }
