@@ -25,6 +25,7 @@ abstract class MyList[+A] {
   // hofs
   def foreach(sideEffect: A => Unit): Unit
   def sort(compare: (A, A) => Int): MyList[A]
+  def zipWith[B,C](list: MyList[B], zip:(A,B) => C): MyList[C]
 }
 
 case object Empty extends MyList[Nothing] {
@@ -43,6 +44,9 @@ case object Empty extends MyList[Nothing] {
   // hofs
   def foreach(sideEffect: Nothing => Unit): Unit = ()
   def sort(compare: (Nothing, Nothing) => Int): MyList[Nothing] = Empty
+  def zipWith[B, C](list: MyList[B], zip: (Nothing, B) => C) : MyList[C] =
+    if(!list.isEmpty) throw new RuntimeException("Lists do not have the same length")
+    else Empty
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -96,8 +100,12 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
       else if(compare(x, sortedList.head) <= 0) new Cons(x, sortedList)
       else new Cons(sortedList.head, insert(x, sortedList.tail))
 
-    var sortedTail = t.sort(compare)
+    val sortedTail = t.sort(compare)
     insert(h, sortedTail)
+  }
+  def zipWith[B, C](list: MyList[B], zip: (A, B) => C): MyList[C] = {
+    if (list.isEmpty) throw new RuntimeException("Lists do not have the same length")
+    else new Cons[C](zip(h, list.head), t.zipWith(list.tail, zip))
   }
 }
 
@@ -122,4 +130,5 @@ object ListTest extends App {
   val printElements = (x: Int) => println(x)
   listOfIntegers.foreach(printElements)
   println(listOfIntegers.sort((x, y) => y - x))
+  println(anotherListOfIntegers.zipWith[String, String](listOfStrings, _ + " - " + _))
 }
