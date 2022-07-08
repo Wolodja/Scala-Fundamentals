@@ -24,6 +24,7 @@ abstract class MyList[+A] {
 
   // hofs
   def foreach(sideEffect: A => Unit): Unit
+  def sort(compare: (A, A) => Int): MyList[A]
 }
 
 case object Empty extends MyList[Nothing] {
@@ -41,6 +42,7 @@ case object Empty extends MyList[Nothing] {
 
   // hofs
   def foreach(sideEffect: Nothing => Unit): Unit = ()
+  def sort(compare: (Nothing, Nothing) => Int): MyList[Nothing] = Empty
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -88,6 +90,15 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
     sideEffect(h)
     t.foreach(sideEffect)
   }
+  def sort(compare: (A, A) => Int): MyList[A] = {
+    def insert(x: A, sortedList: MyList[A]): MyList[A]=
+      if (sortedList.isEmpty) new Cons(x, Empty)
+      else if(compare(x, sortedList.head) <= 0) new Cons(x, sortedList)
+      else new Cons(sortedList.head, insert(x, sortedList.tail))
+
+    var sortedTail = t.sort(compare)
+    insert(h, sortedTail)
+  }
 }
 
 
@@ -110,4 +121,5 @@ object ListTest extends App {
 
   val printElements = (x: Int) => println(x)
   listOfIntegers.foreach(printElements)
+  println(listOfIntegers.sort((x, y) => y - x))
 }
