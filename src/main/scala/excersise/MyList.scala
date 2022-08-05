@@ -1,4 +1,5 @@
-package lectures.part2oop
+package excersise
+
 
 abstract class MyList[+A] {
   /*
