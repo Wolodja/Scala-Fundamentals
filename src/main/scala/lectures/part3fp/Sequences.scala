@@ -27,4 +27,17 @@ object Sequences extends App {
   println(apples5)
 
   println(aList.mkString(" | "))
+
+  // arrays
+  val numbers = Array(1,2,3,4)
+  val threeElements = Array.ofDim[String](3)
+  threeElements.foreach(println)
+
+  // mutation
+  numbers(2) = 0  // syntax sugar for numbers.update(2, 0)
+  println(numbers.mkString(" "))
+
+  // arrays and seq
+  val numberSqe: Seq[Int] = numbers  // implicit conversion
+  println(numberSqe)
 }
