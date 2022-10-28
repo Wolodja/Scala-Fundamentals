@@ -16,5 +16,21 @@ object Options extends App {
   val chainResult = Option(unsafeMethod()).orElse(Option(backupMethod()))
   println(chainResult)
 
+  // DESIGN unsafe APIs
+  def betterUnsafeMethod(): Option[String] = None
+  def betterBackupMethod(): Option[String] = Some("A valid result")
+  val betterChainResult = betterUnsafeMethod() orElse betterBackupMethod()
+
+  // functions on Options
+  println(myFirstOption.isEmpty)
+  println(myFirstOption.get) // UNSAFE - DO NOT USE THIS
+
+  // map, flatMap, filter
+  println(myFirstOption.map(_ * 2))
+  println(myFirstOption.filter(x => x > 10))
+  println(myFirstOption.flatMap(x => Option(x * 10)))
+
+  // for-comprehensions
+
 
 }
