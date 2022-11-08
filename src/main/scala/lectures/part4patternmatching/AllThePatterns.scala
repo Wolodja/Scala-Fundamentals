@@ -2,7 +2,7 @@ package lectures.part4patternmatching
 
 import excersise.{Cons, Empty, MyList}
 
-object AllThePatterns {
+object AllThePatterns extends App {
 
   // 1 - constants
   val x: Any = "Scala"
@@ -70,7 +70,14 @@ object AllThePatterns {
 
   // ALL.
 
+  val numbers = List(1,2,3)
+  val numbersMatch = numbers match
+    case listOfStrings: List[String] => "a list of strings"
+    case listOfSNumbers: List[Int] => "a list of numbers"
+    case _ => ""
 
+  println(numbersMatch)
+  // JVM trick question
 }
 
 
