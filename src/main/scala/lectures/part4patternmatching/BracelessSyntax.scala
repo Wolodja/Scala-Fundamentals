@@ -57,4 +57,25 @@ object BracelessSyntax extends App {
 
 
   println(computeMeaningOfLife(78))
+
+  // class definition (same for traits, objects, enums etc)
+  class Animal:
+    def eat(): Unit =
+      println("I'm eating")
+    end eat
+
+    def grow(): Unit =
+      println("I'm growing")
+
+  // 3000 more lines of code
+  end Animal
+
+  // anonymous classes
+  val aSpecialAnimal = new Animal:
+    override def eat(): Unit = println("I'm special")
+
+  // indentation = strictly larger indentation
+  // 3 spaces + 2 tabs > 2 spaces and 2 tabs
+  // 3 spaces + 2 tabs > 3 spaces and 1 tabs
+  // 3 spaces + 2 tabs ??? 2 spaces and 3 tabs
 }
